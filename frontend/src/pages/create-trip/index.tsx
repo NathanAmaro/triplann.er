@@ -1,16 +1,10 @@
 import { FormEvent, useState } from "react"
-import { ArrowRight, AtSign, Calendar, Mail, MapPin, Plus, Settings2, User, UserRoundPlus, X } from "lucide-react"
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle
-} from "../../components/ui/dialog"
+import { ArrowRight, Calendar, MapPin, Settings2, UserRoundPlus } from "lucide-react"
 import { useNavigate } from "react-router-dom"
+import { InviteGuestsDialog } from "../../components/dialogs/invite-guests-dialog"
+import { ConfirmTripDialog } from "../../components/dialogs/confirm-trip-dialog"
 
-// AULA 2 - 18:00
+// AULA 2 - 22:36
 
 export function CreateTripPage() {
     const navigate = useNavigate()
@@ -142,71 +136,16 @@ export function CreateTripPage() {
                 </div>
             </div >
 
-            <Dialog open={isOpenGuestsModal} onOpenChange={setOpenGuestsModal}>
-                <DialogContent className="shadow-shape rounded-xl py-5 px-6 bg-zinc-900 border-none w-[640px] max-w-max space-y-2">
-                    <DialogHeader className="space-y-2">
-                        <DialogTitle className="text-lg font-semibold">Selecionar convidados</DialogTitle>
-                        <DialogDescription className="text-sm text-zinc-400">
-                            Os convidados irão receber e-mails para confirmar sua participação na viagem. Você poderá adicionar mais convidados futuramente.
-                        </DialogDescription>
-                    </DialogHeader>
+            <InviteGuestsDialog open={isOpenGuestsModal} 
+                onOpenChange={setOpenGuestsModal}
+                handleActiveSecondInput={handleActiveSecondInput}
+                handleRemoveEmailFormInvite={handleRemoveEmailFormInvite}
+                handleSubmitFormInvite={handleSubmitFormInvite}
+                emailsToInvite={emailsToInvite}/>
 
-                    <div className="flex flex-wrap gap-2">
-                        {emailsToInvite.map((email) => (
-                            <div key={email} className="py-1 px-2 rounded-md bg-zinc-800 flex items-center gap-2">
-                                <span className="text-zinc-300">{email}</span>
-                                <button type="button" onClick={() => handleRemoveEmailFormInvite(email)}><X className="size-4 text-zinc-400" /></button>
-                            </div>
-                        ))}
-
-                    </div>
-
-                    <div className="w-full h-px bg-zinc-800" />
-
-                    <DialogFooter>
-                        <form className="py-2 pl-4 pr-2 bg-zinc-950 border border-zinc-800 w-full rounded-lg flex items-center gap-2" onSubmit={handleSubmitFormInvite}>
-                            <AtSign className="text-zinc-400 size-5" />
-                            <input className="bg-transparent placeholder-zinc-400 outline-none flex-1" placeholder="Digite o e-mail do convidado" type="email" name="guestEmail" />
-                            <button className="bg-lime-300 text-lime-950 rounded-lg py-2 px-5 font-medium flex items-center gap-2 hover:bg-lime-400"
-                                onClick={handleActiveSecondInput}
-                                type="submit">
-                                Convidar
-                                <Plus className="size-5 text-lime-950" />
-                            </button>
-                        </form>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-
-            <Dialog open={isOpenConfirmTripModal} onOpenChange={setOpenConfirmTripModal}>
-                <DialogContent className="shadow-shape rounded-xl py-5 px-6 bg-zinc-900 border-none w-[640px] max-w-max space-y-2">
-                    <DialogHeader className="space-y-2">
-                        <DialogTitle className="text-lg font-semibold">Confirmar criação de viagem</DialogTitle>
-                        <DialogDescription className="text-sm text-zinc-400">
-                            Para concluir a criação da viagem <span className="text-zinc-100 font-semibold">Florianópolis, Brasil</span> nas datas de <span className="text-zinc-100 font-semibold">16 a 27 de Agosto de 2024</span> preencha os dados abaixo:
-                        </DialogDescription>
-                    </DialogHeader>
-
-                    <form className="flex flex-col gap-3" onSubmit={handleSubmitFormInvite}>
-                        <div className="py-4 pl-4 pr-2 bg-zinc-950 border border-zinc-800 w-full rounded-lg flex items-center gap-2">
-                            <User className="text-zinc-400 size-5" />
-                            <input className="bg-transparent placeholder-zinc-400 outline-none flex-1" placeholder="Seu nome completo" type="text" name="name" />
-                        </div>
-
-                        <div className="py-4 pl-4 pr-2 bg-zinc-950 border border-zinc-800 w-full rounded-lg flex items-center gap-2">
-                            <Mail className="text-zinc-400 size-5" />
-                            <input className="bg-transparent placeholder-zinc-400 outline-none flex-1" placeholder="Seu e-mail pessoal" type="email" name="email" />
-                        </div>
-
-                        <button className="bg-lime-300 text-lime-950 rounded-lg h-11 px-5 font-medium text-center hover:bg-lime-400"
-                            onClick={handleCreateTrip}
-                            type="submit">
-                            Confirmar criação de viagem
-                        </button>
-                    </form>
-
-                </DialogContent>
-            </Dialog>
+            <ConfirmTripDialog open={isOpenConfirmTripModal}
+                onOpenChange={setOpenConfirmTripModal}
+                handleCreateTrip={handleCreateTrip}/>
         </>
     )
 }
