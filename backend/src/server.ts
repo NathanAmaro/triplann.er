@@ -1,4 +1,6 @@
 import fastify from "fastify"
+import fastifySwagger from "@fastify/swagger";
+import fastifySwaggerUi from "@fastify/swagger-ui";
 import cors from "@fastify/cors"
 import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod"
 import { createTrip } from "./routes/create-trip"
@@ -17,6 +19,29 @@ import { errorHandler } from "./error-handler"
 import { env } from "./env"
 
 const app = fastify({logger: true})
+
+const swaggerOptions = {
+    swagger: {
+        info: {
+            title: "My Title",
+            description: "My Description.",
+            version: "1.0.0",
+        },
+        host: "localhost",
+        schemes: ["http", "https"],
+        consumes: ["application/json"],
+        produces: ["application/json"],
+        tags: [{ name: "Default", description: "Default" }],
+    },
+}
+
+const swaggerUiOptions = {
+    routePrefix: "/docs",
+    exposeRoute: true,
+}
+
+app.register(fastifySwagger, swaggerOptions);
+app.register(fastifySwaggerUi, swaggerUiOptions);
 
 app.register(cors, {
     origin: '*' // URL do front-end Ex.: http://localhost:3000
