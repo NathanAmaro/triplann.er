@@ -1,3 +1,4 @@
+import { FormEvent } from "react";
 import { Mail, User } from "lucide-react";
 import { 
     Dialog, 
@@ -7,10 +8,11 @@ import {
     DialogTitle 
 } from "../ui/dialog"
 
+
 interface ConfirmTripDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
-    handleCreateTrip: () => void
+    handleCreateTrip: (event: FormEvent<HTMLFormElement>) => void
 }
 
 
@@ -37,7 +39,7 @@ export function ConfirmTripDialog(props: ConfirmTripDialogProps) {
                     </div>
 
                     <button className="bg-lime-300 text-lime-950 rounded-lg h-11 px-5 font-medium text-center hover:bg-lime-400"
-                        onClick={props.handleCreateTrip}
+                        onClick={() => props.handleCreateTrip}
                         type="submit">
                         Confirmar criação de viagem
                     </button>
