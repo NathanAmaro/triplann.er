@@ -1,20 +1,20 @@
-import { useState } from "react"
-import { ArrowRight, Calendar, MapPin, Settings2, UserRoundPlus } from "lucide-react"
+import { FormEvent, useState } from "react"
+import { ArrowRight, AtSign, Calendar, MapPin, Plus, Settings2, UserRoundPlus, X } from "lucide-react"
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle
 } from "../src/components/ui/dialog"
 
-
-//AULA 1 - 1:05:18
-
+// AULA 2
 
 export function App() {
   const [isSecondInputActive, setSecondInputActive] = useState(false)
   const [isOpenGuestsModal, setOpenGuestsModal] = useState(false)
+  const [emailsToInvite, setEmailsToInvite] = useState<string[]>([])
 
   function handleActiveSecondInput() {
     setSecondInputActive(true)
@@ -26,6 +26,32 @@ export function App() {
 
   function handleOpenGuestsModal() {
     setOpenGuestsModal(true)
+  }
+
+  function handleSubmitFormInvite(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+
+    const data = new FormData(event.currentTarget)
+
+    const email = data.get('guestEmail')?.toString()
+
+    if (!email) {
+      return
+    }
+
+    if (emailsToInvite.includes(email)) {
+      return
+    }
+
+    setEmailsToInvite([...emailsToInvite, email])
+
+    event.currentTarget.reset()
+  }
+
+  function handleRemoveEmailFormInvite(emailToRemove: string) {
+    const newEmailList = emailsToInvite.filter((email) => email !== emailToRemove)
+
+    setEmailsToInvite(newEmailList)
   }
 
   return (
@@ -73,7 +99,7 @@ export function App() {
 
             {isSecondInputActive && (
               <div className="h-16 bg-zinc-900 px-4 rounded-xl flex items-center justify-center shadow-shape gap-3">
-                <button className="flex items-center gap-2 flex-1 text-lg text-zinc-400" 
+                <button className="flex items-center gap-2 flex-1 text-lg text-zinc-400"
                   type="button"
                   onClick={handleOpenGuestsModal}>
                   <UserRoundPlus className="size-5 text-zinc-400" />
@@ -101,16 +127,38 @@ export function App() {
       </div >
 
       <Dialog open={isOpenGuestsModal} onOpenChange={setOpenGuestsModal}>
-        <DialogContent className="shadow-shape rounded-xl py-5 px-6 bg-zinc-900 border-none w-[640px] max-w-max space-y-5">
+        <DialogContent className="shadow-shape rounded-xl py-5 px-6 bg-zinc-900 border-none w-[640px] max-w-max space-y-2">
           <DialogHeader className="space-y-2">
             <DialogTitle className="text-lg font-semibold">Selecionar convidados</DialogTitle>
             <DialogDescription className="text-sm text-zinc-400">
               Os convidados irão receber e-mails para confirmar sua participação na viagem.
             </DialogDescription>
           </DialogHeader>
-          <div>
+
+          <div className="flex flex-wrap gap-2">
+            {emailsToInvite.map((email) => (
+              <div key={email} className="py-1 px-2 rounded-md bg-zinc-800 flex items-center gap-2">
+                <span className="text-zinc-300">{email}</span>
+                <button type="button" onClick={() => handleRemoveEmailFormInvite(email)}><X className="size-4 text-zinc-400" /></button>
+              </div>
+            ))}
 
           </div>
+
+          <div className="w-full h-px bg-zinc-800" />
+
+          <DialogFooter>
+            <form className="py-2 pl-4 pr-2 bg-zinc-950 border border-zinc-800 w-full rounded-lg flex items-center gap-2" onSubmit={handleSubmitFormInvite}>
+              <AtSign className="text-zinc-400 size-5" />
+              <input className="bg-transparent placeholder-zinc-400 outline-none flex-1" placeholder="Digite o e-mail do convidado" type="email" name="guestEmail" />
+              <button className="bg-lime-300 text-lime-950 rounded-lg py-2 px-5 font-medium flex items-center gap-2 hover:bg-lime-400"
+                onClick={handleActiveSecondInput}
+                type="submit">
+                Convidar
+                <Plus className="size-5 text-lime-950" />
+              </button>
+            </form>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
