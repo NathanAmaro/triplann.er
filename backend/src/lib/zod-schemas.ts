@@ -1,3 +1,5 @@
+import { FastifySchema } from 'fastify'
+import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
 export const createTipsSchema = {
@@ -32,7 +34,7 @@ export const confirmParticipantSchema = {
 export const createActivitySchema = {
     schema: {
         params: z.object({
-            tripId: z.string().uuid()
+            tripId: z.string().uuid().describe('Some description for username')
         }),
         body: z.object({
             title: z.string().min(4),
@@ -62,11 +64,10 @@ export const createLinkSchema = {
 }
 
 export const getLinksSchema = {
-    schema: {
-        params: z.object({
-            tripId: z.string().uuid()
-        })
-    }
+    params: z.object({
+        tripId: z.string().uuid()
+    })
+
 }
 
 export const getParticipantsSchema = {

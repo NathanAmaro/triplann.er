@@ -1,8 +1,9 @@
 import fastify from "fastify"
-import fastifySwagger from "@fastify/swagger";
-import fastifySwaggerUi from "@fastify/swagger-ui";
+import fastifySwagger from "@fastify/swagger"
+import fastifySwaggerUi from "@fastify/swagger-ui"
+import fastifyAutoLoad from '@fastify/autoload'
 import cors from "@fastify/cors"
-import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod"
+import { serializerCompiler, validatorCompiler, jsonSchemaTransform, ZodTypeProvider } from "fastify-type-provider-zod"
 import { createTrip } from "./routes/create-trip"
 import { confirmTrip } from "./routes/confirm-trip"
 import { confirmParticipant } from "./routes/confirm-participant"
@@ -17,55 +18,76 @@ import { getTripDetails } from "./routes/get-trips-details"
 import { getParticipantDetails } from "./routes/get-participant-details"
 import { errorHandler } from "./error-handler"
 import { env } from "./env"
+import path from "path"
+import { getLinksSchema } from "./lib/zod-schemas"
 
-const app = fastify({logger: true})
 
-const swaggerOptions = {
-    swagger: {
-        info: {
-            title: "My Title",
-            description: "My Description.",
-            version: "1.0.0",
-        },
-        host: "localhost",
-        schemes: ["http", "https"],
-        consumes: ["application/json"],
-        produces: ["application/json"],
-        tags: [{ name: "Default", description: "Default" }],
-    },
-}
+const main = async () => {
+  const app = fastify({ logger: true })
 
-const swaggerUiOptions = {
-    routePrefix: "/docs",
-    exposeRoute: true,
-}
-
-app.register(fastifySwagger, swaggerOptions);
-app.register(fastifySwaggerUi, swaggerUiOptions);
-
-app.register(cors, {
+  await app.register(cors, {
     origin: '*' // URL do front-end Ex.: http://localhost:3000
-})
+  })
 
-// Configuração para utilização da integração com Zod
-app.setValidatorCompiler(validatorCompiler)
-app.setSerializerCompiler(serializerCompiler)
+  await app.register(fastifySwagger, {
+    openapi: {
+      openapi: '3.0.0',
+      info: {
+        title: 'Test swagger',
+        description: 'Testing the Fastify swagger API',
+        version: '0.1.0'
+      },
+      servers: [
+        {
+          url: 'http://localhost:3333',
+          description: 'Development server'
+        }
+      ],
+    },
+    transform: jsonSchemaTransform
+  })
 
-app.setErrorHandler(errorHandler)
+  await app.register(fastifySwaggerUi, {
+    routePrefix: '/docs',
+    uiConfig: {
+      docExpansion: 'full'
+    }
+  })
 
-app.register(createTrip)
-app.register(confirmTrip)
-app.register(confirmParticipant)
-app.register(createActivity)
-app.register(getActivities)
-app.register(createLink)
-app.register(getLinks)
-app.register(getParticipants)
-app.register(createInvite)
-app.register(updateTrip)
-app.register(getTripDetails)
-app.register(getParticipantDetails)
+  await app.register(fastifyAutoLoad, {
+    dir: path.join(__dirname, 'routes')
+  })
 
-app.listen({ port: env.PORT }).then(() => {
-    console.log(`Server running in port ${env.PORT}`)
-})
+  // Configuração para utilização da integração com Zod
+  app.setValidatorCompiler(validatorCompiler)
+  app.setSerializerCompiler(serializerCompiler)
+
+  app.setErrorHandler(errorHandler)
+
+
+  //await app.register(createTrip)
+  //await app.register(confirmTrip)
+  //await app.register(confirmParticipant)
+  //await app.register(createActivity)
+  //await app.register(getActivities)
+  //await app.register(createLink)
+  await app.register(getLinks)
+  //await app.register(getParticipants)
+  //await app.register(createInvite)
+  //await app.register(updateTrip)
+  //await app.register(getTripDetails)
+  //await app.register(getParticipantDetails)
+
+  await app.ready()
+  app.swagger()
+
+  try {
+    await app.listen({ port: env.PORT }).then(() => {
+      console.log(`Server running in port ${env.PORT}`)
+    })
+  } catch (error) {
+    app.log.error(error)
+    process.exit(1)
+  }
+}
+main()

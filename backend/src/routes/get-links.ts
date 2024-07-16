@@ -1,32 +1,50 @@
 import { FastifyInstance } from "fastify"
 import { ZodTypeProvider } from "fastify-type-provider-zod"
-import { getLinksSchema } from "../lib/zod-schemas"
 import { prisma } from "../lib/prisma"
-import { dayjs } from '../lib/dayjs-locale'
+import z from "zod"
 
 export async function getLinks(app: FastifyInstance) {
-    app.withTypeProvider<ZodTypeProvider>().get('/trips/:tripId/links', getLinksSchema, async (request) => {
-        const { tripId } = request.params
+    app.withTypeProvider<ZodTypeProvider>().route({
+        method: 'GET',
+        url: '/trips/:tripId/links',
+        schema: {
+            params: z.object({
+                tripId: z.string().uuid().describe('UUID da viagem')
+            }),
+            response: {
+                200: z.object({
+                    links: z.array(z.object({
+                        id: z.string(),
+                        title: z.string(),
+                        url: z.string(),
+                        trip_id: z.string()
+                    }))
+                }).describe('Resposta padrão')
+            }
+        },
+        handler: async (request, reply) => {
 
-        // Buscando a viagem com a id informada
-        const trip = await prisma.trip.findUnique({
-            where: {
-                id: tripId
-            }, include: {
-                links: {
-                    orderBy: {
-                        title: 'asc'
+            const { tripId } = request.params
+
+            // Buscando a viagem com a id informada
+            const trip = await prisma.trip.findUnique({
+                where: {
+                    id: tripId
+                }, include: {
+                    links: {
+                        orderBy: {
+                            title: 'asc'
+                        }
                     }
                 }
+            })
+
+            // Verificando se a busca foi bem sucedida
+            if (!trip) {
+                throw new Error('Trip not found.')
             }
-        })
 
-        // Verificando se a busca foi bem sucedida
-        if (!trip) {
-            throw new Error('Trip not found.')
+            reply.code(200).send({ links: trip.links })
         }
-
-        return {links: trip.links}
-
     })
 }
