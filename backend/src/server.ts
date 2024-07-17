@@ -33,14 +33,24 @@ const main = async () => {
     openapi: {
       openapi: '3.0.0',
       info: {
-        title: 'Test swagger',
-        description: 'Testing the Fastify swagger API',
+        title: 'Triplann.er',
+        description: 'Documentação detalhada e dinâmica do backend utilizando Fastify da aplicação Triplann.er',
         version: '0.1.0'
       },
+      tags: [
+        {
+          name: 'Trip',
+          description: 'Rotas de viagens'
+        },
+        {
+          name: 'Participant',
+          description: 'Rotas de participantes'
+        }
+      ],
       servers: [
         {
-          url: 'http://localhost:3333',
-          description: 'Development server'
+          url: `http://localhost:${env.PORT}`,
+          description: 'Servidor de desenvolvimento'
         }
       ],
     },
@@ -50,7 +60,7 @@ const main = async () => {
   await app.register(fastifySwaggerUi, {
     routePrefix: '/docs',
     uiConfig: {
-      docExpansion: 'full'
+      docExpansion: 'list'
     }
   })
 
@@ -65,18 +75,18 @@ const main = async () => {
   app.setErrorHandler(errorHandler)
 
 
-  //await app.register(createTrip)
-  //await app.register(confirmTrip)
-  //await app.register(confirmParticipant)
-  //await app.register(createActivity)
-  //await app.register(getActivities)
-  //await app.register(createLink)
+  await app.register(createTrip)
+  await app.register(confirmTrip)
+  await app.register(confirmParticipant)
+  await app.register(createActivity)
+  await app.register(getActivities)
+  await app.register(createLink)
   await app.register(getLinks)
-  //await app.register(getParticipants)
-  //await app.register(createInvite)
-  //await app.register(updateTrip)
-  //await app.register(getTripDetails)
-  //await app.register(getParticipantDetails)
+  await app.register(getParticipants)
+  await app.register(createInvite)
+  await app.register(updateTrip)
+  await app.register(getTripDetails)
+  await app.register(getParticipantDetails)
 
   await app.ready()
   app.swagger()

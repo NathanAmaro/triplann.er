@@ -8,6 +8,8 @@ export async function getLinks(app: FastifyInstance) {
         method: 'GET',
         url: '/trips/:tripId/links',
         schema: {
+            description: 'Rota destinada a pegar a lista de links vinculados a viagem',
+            tags: ['Trip'],
             params: z.object({
                 tripId: z.string().uuid().describe('UUID da viagem')
             }),
@@ -23,7 +25,6 @@ export async function getLinks(app: FastifyInstance) {
             }
         },
         handler: async (request, reply) => {
-
             const { tripId } = request.params
 
             // Buscando a viagem com a id informada
@@ -44,7 +45,7 @@ export async function getLinks(app: FastifyInstance) {
                 throw new Error('Trip not found.')
             }
 
-            reply.code(200).send({ links: trip.links })
+            return reply.code(200).send({ links: trip.links })
         }
     })
 }

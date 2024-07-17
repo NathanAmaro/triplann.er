@@ -1,38 +1,57 @@
 import { FastifyInstance } from "fastify"
 import { ZodTypeProvider } from "fastify-type-provider-zod"
-import { getParticipantsSchema } from "../lib/zod-schemas"
 import { prisma } from "../lib/prisma"
-import { dayjs } from '../lib/dayjs-locale'
+import z from "zod"
 
 export async function getParticipants(app: FastifyInstance) {
-    app.withTypeProvider<ZodTypeProvider>().get('/trips/:tripId/participants', getParticipantsSchema, async (request) => {
-        const { tripId } = request.params
+    app.withTypeProvider<ZodTypeProvider>().route({
+        method: 'GET',
+        url: '/trips/:tripId/participants',
+        schema: {
+            description: 'Rota destinada a pegar uma lista de participantes da viagem',
+            tags: ['Trip'],
+            params: z.object({
+                tripId: z.string().uuid().describe('UUID da viagem')
+            }),
+            response: {
+                200: z.object({
+                    participants: z.array(z.object({
+                        id: z.string().uuid().describe('UUID do participante'),
+                        is_confirmed: z.boolean().describe('Estado de confirmação do participante na viagem'),
+                        name: z.string().nullable().describe('Nome do participante caso houver'),
+                        email: z.string().email().describe('E-mail do participante'),
+                    }))
+                })
+            }
+        },
+        handler: async (request, reply) => {
+            const { tripId } = request.params
 
-        // Buscando a viagem com a id informada
-        const trip = await prisma.trip.findUnique({
-            where: {
-                id: tripId
-            }, include: {
-                participants: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true,
-                        is_confirmed: true
-                    },
-                    orderBy: {
-                        email: 'asc'
+            // Buscando a viagem com a id informada
+            const trip = await prisma.trip.findUnique({
+                where: {
+                    id: tripId
+                }, include: {
+                    participants: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true,
+                            is_confirmed: true
+                        },
+                        orderBy: {
+                            email: 'asc'
+                        }
                     }
                 }
+            })
+
+            // Verificando se a busca foi bem sucedida
+            if (!trip) {
+                throw new Error('Trip not found.')
             }
-        })
 
-        // Verificando se a busca foi bem sucedida
-        if (!trip) {
-            throw new Error('Trip not found.')
+            return reply.code(200).send({ participants: trip.participants }) 
         }
-
-        return { participants: trip.participants }
-
     })
 }
