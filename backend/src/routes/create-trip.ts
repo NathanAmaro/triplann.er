@@ -6,7 +6,6 @@ import { prisma } from "../lib/prisma"
 import { getMailClient } from "../lib/email"
 import z from "zod"
 import { env } from "../env"
-import { ClientError } from "../errors/client-error-400"
 
 export async function createTrip(app: FastifyInstance) {
     app.withTypeProvider<ZodTypeProvider>().route({

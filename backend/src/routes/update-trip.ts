@@ -1,6 +1,5 @@
 import { FastifyInstance } from "fastify"
 import { ZodTypeProvider } from "fastify-type-provider-zod"
-import { updateTripSchema } from "../lib/zod-schemas"
 import { prisma } from "../lib/prisma"
 import { dayjs } from '../lib/dayjs-locale'
 import z from "zod"

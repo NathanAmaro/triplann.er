@@ -1,8 +1,6 @@
 import { FastifyInstance } from "fastify"
 import { ZodTypeProvider } from "fastify-type-provider-zod"
-import { getTripDetailsSchema } from "../lib/zod-schemas"
 import { prisma } from "../lib/prisma"
-import { ClientError } from "../errors/client-error-400"
 import z from "zod"
 
 export async function getTripDetails(app: FastifyInstance) {
