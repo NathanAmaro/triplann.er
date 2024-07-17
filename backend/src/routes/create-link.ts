@@ -20,6 +20,9 @@ export async function createLink(app: FastifyInstance) {
             response: {
                 200: z.object({
                     linkId: z.string().uuid().describe('UUID do link')
+                }),
+                400: z.object({
+                    message: z.string().describe('Mensagem de erro')
                 })
             }
         },
@@ -36,7 +39,7 @@ export async function createLink(app: FastifyInstance) {
 
             // Verificando se a busca foi bem sucedida
             if (!trip) {
-                throw new Error('Trip not found.')
+                return reply.code(400).send({message: 'Trip not found.'})
             }
 
             // Cadastrando o link

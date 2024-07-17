@@ -15,7 +15,9 @@ export async function confirmParticipant(app: FastifyInstance) {
                 participantId: z.string().uuid().describe('UUID do participante')
             }),
             response: {
-                200: z.string().url().describe('Redirecionamento automático para a página da viagem')
+                400: z.object({
+                    message: z.string().describe('Mensagem de erro')
+                })
             }
         },
         handler: async (request, reply) => {
@@ -30,7 +32,7 @@ export async function confirmParticipant(app: FastifyInstance) {
 
             // Verificando se a consulta não obteu um resultado
             if (!participant) {
-                throw new Error('Participant not found.')
+                return reply.code(400).send({message: 'Participant not found.'})
             }
 
             // Verificando se o participante já foi confirmado anteriormente
@@ -50,7 +52,7 @@ export async function confirmParticipant(app: FastifyInstance) {
             })
 
             // Redirecionando automaticamente o usuário para a link do front-end
-            return reply.code(200).redirect(`${env.FRONT_BASE_URL}/trips/${participant.trip_id}`)
+            return reply.redirect(`${env.FRONT_BASE_URL}/trips/${participant.trip_id}`)
         }
     })
 }

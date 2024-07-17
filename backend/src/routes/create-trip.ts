@@ -5,6 +5,8 @@ import nodemailer from 'nodemailer'
 import { prisma } from "../lib/prisma"
 import { getMailClient } from "../lib/email"
 import z from "zod"
+import { env } from "../env"
+import { ClientError } from "../errors/client-error-400"
 
 export async function createTrip(app: FastifyInstance) {
     app.withTypeProvider<ZodTypeProvider>().route({
@@ -24,6 +26,9 @@ export async function createTrip(app: FastifyInstance) {
             response: {
                 200: z.object({
                     tripId: z.string().uuid().describe('UUID da viagem')
+                }),
+                400: z.object({
+                    message: z.string().describe('Mensagem do erro')
                 })
             }
         },
@@ -32,12 +37,12 @@ export async function createTrip(app: FastifyInstance) {
 
             // Verificando se a data de início é anterior a data atual
             if (dayjs(starts_at).isBefore(new Date())) {
-                throw new Error('Invalid trip start date.')
+                return reply.code(400).send({message: 'Invalid trip start date.'})
             }
 
             // Verificando se a data de fim é anterior a data de início
             if (dayjs(ends_at).isBefore(starts_at)) {
-                throw new Error('Invalid trip end date.')
+                return reply.code(400).send({message: 'Invalid trip end date.'})
             }
 
             // Criando a viagem
@@ -67,7 +72,7 @@ export async function createTrip(app: FastifyInstance) {
             const formattedEndtDate = dayjs(ends_at).locale("pt-br").format('DD [de] MMMM [de] YYYY')
 
             // Gerando link de confirmação da viagem
-            const confirmationLink = `http://localhost:3333/trips/${trip.id}/confirm`
+            const confirmationLink = `${env.API_BASE_URL}/trips/${trip.id}/confirm`
 
             // Configurando o envio de email
             const mail = await getMailClient()

@@ -19,6 +19,9 @@ export async function getParticipantDetails(app: FastifyInstance) {
                     name: z.string().nullable().describe('Nome do participante caso houver'),
                     email: z.string().email().describe('E-mail do participante'),
                     is_confirmed: z.boolean().describe('Estado de confirmação de presença do participante'),
+                }),
+                400: z.object({
+                    message: z.string().describe('Mensagem de erro')
                 })
             }
         },
@@ -40,7 +43,7 @@ export async function getParticipantDetails(app: FastifyInstance) {
 
             // Verificando se a busca foi bem sucedida
             if (!participant) {
-                throw new Error('Participant not found.')
+                return reply.code(400).send({message: 'Participant not found.'})
             }
 
             return reply.code(200).send(participant)

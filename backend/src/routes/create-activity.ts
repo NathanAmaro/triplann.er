@@ -21,6 +21,9 @@ export async function createActivity(app: FastifyInstance) {
             response: {
                 200: z.object({
                     activityId: z.string().uuid().describe('UUID da atividade cadastrada')
+                }),
+                400: z.object({
+                    message: z.string().describe('Mensagem de erro')
                 })
             }
         },
@@ -37,17 +40,17 @@ export async function createActivity(app: FastifyInstance) {
 
             // Verificando se a busca foi bem sucedida
             if (!trip) {
-                throw new Error('Trip not found.')
+                return reply.code(400).send({message: 'Trip not found.'})
             }
 
             // Verificando se a data da atividade está anterior a data do início da viagem
             if (dayjs(occurs_at).isBefore(trip.starts_at)) {
-                throw new Error('Invalid activity date.')
+                return reply.code(400).send({message: 'Invalid starts date to activity.'})
             }
 
             // Verificando se a data da atividade está posterior a data do fim da viagem
             if (dayjs(occurs_at).isAfter(trip.ends_at)) {
-                throw new Error('Invalid activity date.')
+                return reply.code(400).send({message: 'Invalid ends date to activity.'})
             }
 
             // Cadastrando a atividade

@@ -16,7 +16,12 @@ export async function confirmTrip(app: FastifyInstance) {
             tags: ['Trip'],
             params: z.object({
                 tripId: z.string().uuid()
-            })
+            }),
+            response: {
+                400: z.object({
+                    message: z.string().describe('Mensagem de erro')
+                })
+            }
         },
         handler: async (request, reply) => {
             const { tripId } = request.params
@@ -30,7 +35,7 @@ export async function confirmTrip(app: FastifyInstance) {
 
             // Verificando se a consulta não obteu um resultado
             if (!trip) {
-                throw new Error('Trip not found.')
+                return reply.code(400).send({message: 'Trip not found.'})
             }
 
             // Verificando se a viagem já foi confirmada anteriormente
@@ -86,7 +91,7 @@ export async function confirmTrip(app: FastifyInstance) {
                             <p>Para confirmar sua viagem, clique no link abaixo:</p>
                             <br>
                             <p>
-                                <a href="${confirmationLink}">
+                                <a href="${confirmationLink}" target="_blank">
                                     Confirmar viagem
                                 </a>
                             </p>

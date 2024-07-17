@@ -23,6 +23,9 @@ export async function createInvite(app: FastifyInstance) {
             response: {
                 200: z.object({
                     participantId: z.string().uuid().describe('UUID do participante')
+                }),
+                400: z.object({
+                    message: z.string().describe('Mensagem de erro')
                 })
             }
         },
@@ -39,7 +42,7 @@ export async function createInvite(app: FastifyInstance) {
 
             // Verificando se a busca foi bem sucedida
             if (!trip) {
-                throw new Error('Trip not found.')
+                return reply.code(400).send({message: 'Trip not found.'})
             }
 
             // Cadastrando o link

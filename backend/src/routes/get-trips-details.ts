@@ -23,6 +23,9 @@ export async function getTripDetails(app: FastifyInstance) {
                     starts_at: z.coerce.date().describe('Data do início da viagem'),
                     ends_at: z.coerce.date().describe('Data do fim da viagem'),
                     is_confirmed: z.boolean().describe('Estado de confirmação da viagem'),
+                }),
+                400: z.object({
+                    message: z.string().describe('Mensagem de erro')
                 })
             }
         },
@@ -46,7 +49,7 @@ export async function getTripDetails(app: FastifyInstance) {
 
             // Verificando se a busca foi bem sucedida
             if (!trip) {
-                throw new ClientError('Trip not found.')
+                return reply.code(400).send({message: 'Trip not found.'})
             }
 
             return reply.code(200).send(trip)

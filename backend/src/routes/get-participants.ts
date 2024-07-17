@@ -9,7 +9,7 @@ export async function getParticipants(app: FastifyInstance) {
         url: '/trips/:tripId/participants',
         schema: {
             description: 'Rota destinada a pegar uma lista de participantes da viagem',
-            tags: ['Trip'],
+            tags: ['Trip', 'Participant'],
             params: z.object({
                 tripId: z.string().uuid().describe('UUID da viagem')
             }),
@@ -21,6 +21,9 @@ export async function getParticipants(app: FastifyInstance) {
                         name: z.string().nullable().describe('Nome do participante caso houver'),
                         email: z.string().email().describe('E-mail do participante'),
                     }))
+                }),
+                400: z.object({
+                    message: z.string().describe('Mensagem de erro')
                 })
             }
         },
@@ -48,7 +51,7 @@ export async function getParticipants(app: FastifyInstance) {
 
             // Verificando se a busca foi bem sucedida
             if (!trip) {
-                throw new Error('Trip not found.')
+                return reply.code(400).send({message: 'Trip not found.'})
             }
 
             return reply.code(200).send({ participants: trip.participants }) 

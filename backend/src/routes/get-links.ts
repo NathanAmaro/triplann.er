@@ -21,7 +21,10 @@ export async function getLinks(app: FastifyInstance) {
                         url: z.string(),
                         trip_id: z.string()
                     }))
-                }).describe('Resposta padrão')
+                }),
+                400: z.object({
+                    message: z.string().describe('Mensagem de erro')
+                })
             }
         },
         handler: async (request, reply) => {
@@ -42,7 +45,7 @@ export async function getLinks(app: FastifyInstance) {
 
             // Verificando se a busca foi bem sucedida
             if (!trip) {
-                throw new Error('Trip not found.')
+                return reply.code(400).send({message: 'Trip not found.'})
             }
 
             return reply.code(200).send({ links: trip.links })

@@ -3,7 +3,11 @@ import fastifySwagger from "@fastify/swagger"
 import fastifySwaggerUi from "@fastify/swagger-ui"
 import fastifyAutoLoad from '@fastify/autoload'
 import cors from "@fastify/cors"
-import { serializerCompiler, validatorCompiler, jsonSchemaTransform, ZodTypeProvider } from "fastify-type-provider-zod"
+import { 
+  serializerCompiler, 
+  validatorCompiler, 
+  jsonSchemaTransform 
+} from "fastify-type-provider-zod"
 import { createTrip } from "./routes/create-trip"
 import { confirmTrip } from "./routes/confirm-trip"
 import { confirmParticipant } from "./routes/confirm-participant"
@@ -16,10 +20,8 @@ import { createInvite } from "./routes/create-invite"
 import { updateTrip } from "./routes/update-trip"
 import { getTripDetails } from "./routes/get-trips-details"
 import { getParticipantDetails } from "./routes/get-participant-details"
-import { errorHandler } from "./error-handler"
 import { env } from "./env"
 import path from "path"
-import { getLinksSchema } from "./lib/zod-schemas"
 
 
 const main = async () => {
@@ -64,6 +66,7 @@ const main = async () => {
     }
   })
 
+  // Registrando o fastifyAutoLoad para preencher os schemas do Swagger automaticamente
   await app.register(fastifyAutoLoad, {
     dir: path.join(__dirname, 'routes')
   })
@@ -72,9 +75,7 @@ const main = async () => {
   app.setValidatorCompiler(validatorCompiler)
   app.setSerializerCompiler(serializerCompiler)
 
-  app.setErrorHandler(errorHandler)
-
-
+  // Registrando as rotas
   await app.register(createTrip)
   await app.register(confirmTrip)
   await app.register(confirmParticipant)

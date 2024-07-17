@@ -23,7 +23,10 @@ export async function getActivities(app: FastifyInstance) {
                         occurs_at: z.coerce.date().describe('Data que a atividade ocorrerá'),
                         trip_id: z.string().describe('UUID da viagem'),
                     }))
-                })).describe('Lista de datas contendo uma lista de atividades por datas')
+                })).describe('Lista de datas contendo uma lista de atividades por datas'),
+                400: z.object({
+                    message: z.string().describe('Mensagem de erro')
+                })
             }
         },
         handler: async (request, reply) => {
@@ -44,7 +47,7 @@ export async function getActivities(app: FastifyInstance) {
 
             // Verificando se a busca foi bem sucedida
             if (!trip) {
-                throw new Error('Trip not found.')
+                return reply.code(400).send({message: 'Trip not found.'})
             }
 
             // Verificando a diferença em dias "days" entre a data de fim e a data de início da viagem

@@ -23,6 +23,9 @@ export async function updateTrip(app: FastifyInstance) {
             response: {
                 200: z.object({
                     tripId: z.string().uuid().describe('UUID da viagem')
+                }),
+                400: z.object({
+                    message: z.string().describe('Mensagem de erro')
                 })
             }
         },
@@ -39,17 +42,17 @@ export async function updateTrip(app: FastifyInstance) {
 
             // Verificando se a busca foi bem sucedida
             if (!trip) {
-                throw new Error('Trip not found.')
+                return reply.code(400).send({message: 'Trip not found.'})
             }
 
             // Verificando se a data de início é anterior a data atual
             if (dayjs(starts_at).isBefore(new Date())) {
-                throw new Error('Invalid trip start date.')
+                return reply.code(400).send({message: 'Invalid trip start date.'})
             }
 
             // Verificando se a data de fim é anterior a data de início
             if (dayjs(ends_at).isBefore(starts_at)) {
-                throw new Error('Invalid trip end date.')
+                return reply.code(400).send({message: 'End date of the trip is before the start date.'})
             }
 
             // Alterando os dados da viagem
