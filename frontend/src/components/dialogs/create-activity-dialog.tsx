@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Calendar, Clock, Tag } from "lucide-react";
 import {dayjs} from '../../lib/dayjs'
 import { ptBR } from "date-fns/locale"
@@ -18,16 +18,37 @@ import {
 
 // AULA 2 - 1:02:02
 
-interface InviteGuestsDialogProps {
+interface CreateActivityDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
 }
 
-export function CreateActivityDialog(props: InviteGuestsDialogProps) {
+export function CreateActivityDialog(props: CreateActivityDialogProps) {
     const [date, setDate] = useState<Date>()
+    const dateInput = useRef<HTMLInputElement | null>(null)
+    const timeInput = useRef<HTMLInputElement | null>(null)
+
+    function handleDialogChange(state: boolean) {
+        !state && setDate(undefined);
+        return props.onOpenChange(state)
+    }
+
+    function handleChangeDateInputValue (value: Date | undefined) {
+        if (dateInput.current) {
+            if (date) {
+                dateInput.current.value = date.toString()
+            }
+        }
+
+        return setDate(value)
+    }
+
+    function handleShowTimeInputPicker() {
+        timeInput.current?.showPicker()
+    }
 
     return (
-        <Dialog open={props.open} onOpenChange={props.onOpenChange}>
+        <Dialog open={props.open} onOpenChange={handleDialogChange} >
             <DialogContent className="shadow-shape rounded-xl py-5 px-6 bg-zinc-900 border-none w-[640px] space-y-2">
                 <DialogHeader className="space-y-2">
                     <DialogTitle className="text-lg font-semibold">Cadastrar atividade</DialogTitle>
@@ -48,22 +69,23 @@ export function CreateActivityDialog(props: InviteGuestsDialogProps) {
                                 <button className="py-4 pl-4 pr-2 bg-zinc-950 border border-zinc-800 w-full rounded-lg flex items-center gap-2">
                                     <Calendar className="text-zinc-400 size-5" />
                                     <span className="text-center">{date ? dayjs(date).format('DD [de] MMMM [de] YYYY') : 'Quando?'}</span>
+                                    <input className="[display:none]" type="date" name="date" />
                                 </button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0">
                                 <DatePicker
                                     mode="single"
                                     selected={date}
-                                    onSelect={setDate}
+                                    onSelect={handleChangeDateInputValue}
                                     initialFocus
                                     locale={ptBR}
                                 />
                             </PopoverContent>
                         </Popover>
 
-                        <div className="py-4 pl-4 pr-2 bg-zinc-950 border border-zinc-800 rounded-lg flex items-center gap-2">
-                            <Clock className="text-zinc-400 size-5" />
-                            <input className="bg-transparent placeholder-zinc-400 outline-none w-24" placeholder="Horário" type="time" name="time" />
+                        <div className="py-4 px-4 bg-zinc-950 border border-zinc-800 rounded-lg flex items-center gap-2">
+                            <Clock className="text-zinc-400 size-5 hover:cursor-pointer" onClick={handleShowTimeInputPicker} />
+                            <input className="bg-transparent placeholder-zinc-400 outline-none w-min" ref={timeInput} placeholder="Horário" type="time" name="time" />
                         </div>
                     </div>
 
