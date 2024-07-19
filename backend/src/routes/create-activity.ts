@@ -21,10 +21,10 @@ export async function createActivity(app: FastifyInstance) {
             response: {
                 200: z.object({
                     activityId: z.string().uuid().describe('UUID da atividade cadastrada')
-                }),
+                }).describe('Success'),
                 400: z.object({
                     message: z.string().describe('Mensagem de erro')
-                })
+                }).describe('Error')
             }
         },
         handler: async (request, reply) => {

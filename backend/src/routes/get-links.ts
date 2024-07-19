@@ -21,10 +21,10 @@ export async function getLinks(app: FastifyInstance) {
                         url: z.string(),
                         trip_id: z.string()
                     }))
-                }),
+                }).describe('Success'),
                 400: z.object({
                     message: z.string().describe('Mensagem de erro')
-                })
+                }).describe('Error')
             }
         },
         handler: async (request, reply) => {

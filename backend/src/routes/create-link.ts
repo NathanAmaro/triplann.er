@@ -20,10 +20,10 @@ export async function createLink(app: FastifyInstance) {
             response: {
                 200: z.object({
                     linkId: z.string().uuid().describe('UUID do link')
-                }),
+                }).describe('Success'),
                 400: z.object({
                     message: z.string().describe('Mensagem de erro')
-                })
+                }).describe('Error')
             }
         },
         handler: async (request, reply) => {

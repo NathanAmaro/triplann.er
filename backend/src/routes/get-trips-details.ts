@@ -21,10 +21,10 @@ export async function getTripDetails(app: FastifyInstance) {
                     starts_at: z.coerce.date().describe('Data do início da viagem'),
                     ends_at: z.coerce.date().describe('Data do fim da viagem'),
                     is_confirmed: z.boolean().describe('Estado de confirmação da viagem'),
-                }),
+                }).describe('Success'),
                 400: z.object({
                     message: z.string().describe('Mensagem de erro')
-                })
+                }).describe('Error')
             }
         },
         handler: async (request, reply) => {

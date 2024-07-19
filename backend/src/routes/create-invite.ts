@@ -23,10 +23,10 @@ export async function createInvite(app: FastifyInstance) {
             response: {
                 200: z.object({
                     participantId: z.string().uuid().describe('UUID do participante')
-                }),
+                }).describe('Success'),
                 400: z.object({
                     message: z.string().describe('Mensagem de erro')
-                })
+                }).describe('Error')
             }
         },
         handler: async (request, reply) => {

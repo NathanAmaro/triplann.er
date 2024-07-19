@@ -17,7 +17,7 @@ export async function confirmParticipant(app: FastifyInstance) {
             response: {
                 400: z.object({
                     message: z.string().describe('Mensagem de erro')
-                })
+                }).describe('Error')
             }
         },
         handler: async (request, reply) => {

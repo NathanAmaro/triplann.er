@@ -21,10 +21,10 @@ export async function getParticipants(app: FastifyInstance) {
                         name: z.string().nullable().describe('Nome do participante caso houver'),
                         email: z.string().email().describe('E-mail do participante'),
                     }))
-                }),
+                }).describe('Success'),
                 400: z.object({
                     message: z.string().describe('Mensagem de erro')
-                })
+                }).describe('Error')
             }
         },
         handler: async (request, reply) => {

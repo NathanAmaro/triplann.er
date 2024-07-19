@@ -22,10 +22,10 @@ export async function updateTrip(app: FastifyInstance) {
             response: {
                 200: z.object({
                     tripId: z.string().uuid().describe('UUID da viagem')
-                }),
+                }).describe('Success'),
                 400: z.object({
                     message: z.string().describe('Mensagem de erro')
-                })
+                }).describe('Error')
             }
         },
         handler: async (request, reply) => {

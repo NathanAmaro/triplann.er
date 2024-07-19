@@ -18,8 +18,8 @@ const buttonVariants = cva(
           "bg-zinc-100 text-zinc-900 hover:bg-zinc-100/80 dark:bg-zinc-800 dark:text-zinc-50 dark:hover:bg-zinc-800/80",
         ghost: "hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-50",
         link: "text-zinc-900 underline-offset-4 hover:underline dark:text-zinc-50",
-        lime: "bg-lime-300 text-lime-950 font-medium font-semibold flex items-center gap-2 hover:bg-lime-400",
-        zinc: "bg-zinc-800 text-zinc-200 font-medium font-semibold flex items-center gap-2 hover:bg-zinc-700"
+        lime: "bg-lime-300 text-lime-950 font-semibold flex items-center gap-2 hover:bg-lime-400",
+        zinc: "bg-zinc-800 text-zinc-200 font-semibold flex items-center gap-2 hover:bg-zinc-700"
       },
       size: {
         default: "rounded-lg px-5 py-3",

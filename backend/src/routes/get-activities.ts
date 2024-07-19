@@ -23,10 +23,10 @@ export async function getActivities(app: FastifyInstance) {
                         occurs_at: z.coerce.date().describe('Data que a atividade ocorrerá'),
                         trip_id: z.string().describe('UUID da viagem'),
                     }))
-                })).describe('Lista de datas contendo uma lista de atividades por datas'),
+                })).describe('Success'),
                 400: z.object({
                     message: z.string().describe('Mensagem de erro')
-                })
+                }).describe('Error')
             }
         },
         handler: async (request, reply) => {

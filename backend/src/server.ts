@@ -1,12 +1,13 @@
 import fastify from "fastify"
 import fastifySwagger from "@fastify/swagger"
 import fastifySwaggerUi from "@fastify/swagger-ui"
+import fastifyApiReference from '@scalar/fastify-api-reference'
 import fastifyAutoLoad from '@fastify/autoload'
 import cors from "@fastify/cors"
-import { 
-  serializerCompiler, 
-  validatorCompiler, 
-  jsonSchemaTransform 
+import {
+  serializerCompiler,
+  validatorCompiler,
+  jsonSchemaTransform
 } from "fastify-type-provider-zod"
 import { createTrip } from "./routes/create-trip"
 import { confirmTrip } from "./routes/confirm-trip"
@@ -31,6 +32,7 @@ const main = async () => {
     origin: '*' // URL do front-end Ex.: http://localhost:3000
   })
 
+  // Configuração do Swagger para a interface da API
   await app.register(fastifySwagger, {
     openapi: {
       openapi: '3.0.0',
@@ -59,13 +61,23 @@ const main = async () => {
     transform: jsonSchemaTransform
   })
 
-  await app.register(fastifySwaggerUi, {
+  // Aplicação de interface para a documentação da API Scalar Referente
+  await app.register(fastifyApiReference, {
     routePrefix: '/docs',
+    configuration: {
+      theme: 'solarized',
+    },
+  })
+
+  /*
+  await app.register(fastifySwaggerUi, {
+    routePrefix: '/docs2',
     uiConfig: {
       docExpansion: 'list'
     }
   })
-
+  */
+ 
   // Registrando o fastifyAutoLoad para preencher os schemas do Swagger automaticamente
   await app.register(fastifyAutoLoad, {
     dir: path.join(__dirname, 'routes')
