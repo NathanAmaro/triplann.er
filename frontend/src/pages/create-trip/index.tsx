@@ -1,7 +1,7 @@
 import { FormEvent, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { InviteGuestsDialog } from "../../components/dialogs/invite-guests-dialog"
-import { ConfirmTripDialog } from "../../components/dialogs/confirm-trip-dialog"
+import { InviteGuestsDialog } from "./components/invite-guests-dialog"
+import { ConfirmTripDialog } from "./components/confirm-trip-dialog"
 import { Step1 } from "./components/step-1"
 import { Step2 } from "./components/step-2"
 
@@ -56,11 +56,14 @@ export function CreateTripPage() {
         setOpenConfirmTripModal(true)
     }
 
-    function handleCreateTrip(event: FormEvent<HTMLFormElement>) {
+    function handleSubmitFormConfirmTrip(event: FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
         navigate('/trips/123')
+
     }
+
+    
 
     return (
         <>
@@ -104,7 +107,7 @@ export function CreateTripPage() {
 
             <ConfirmTripDialog open={isOpenConfirmTripModal}
                 onOpenChange={setOpenConfirmTripModal}
-                handleCreateTrip={handleCreateTrip}/>
+                handleSubmitFormConfirmTrip={handleSubmitFormConfirmTrip}/>
         </>
     )
 }

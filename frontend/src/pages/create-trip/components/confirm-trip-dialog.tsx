@@ -6,17 +6,19 @@ import {
     DialogDescription,
     DialogHeader, 
     DialogTitle 
-} from "../ui/dialog"
+} from "../../../components/ui/dialog"
+import { Button } from "../../../components/ui/button";
 
 
 interface ConfirmTripDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
-    handleCreateTrip: (event: FormEvent<HTMLFormElement>) => void
+    handleSubmitFormConfirmTrip: (event: FormEvent<HTMLFormElement>) => void
 }
 
 
 export function ConfirmTripDialog(props: ConfirmTripDialogProps) {
+    
     return (
         <Dialog open={props.open} onOpenChange={props.onOpenChange}>
             <DialogContent className="shadow-shape rounded-xl py-5 px-6 bg-zinc-900 border-none w-[640px] max-w-max space-y-2">
@@ -27,7 +29,7 @@ export function ConfirmTripDialog(props: ConfirmTripDialogProps) {
                     </DialogDescription>
                 </DialogHeader>
 
-                <form className="flex flex-col gap-3">
+                <form className="flex flex-col gap-3" onSubmit={props.handleSubmitFormConfirmTrip}>
                     <div className="py-4 pl-4 pr-2 bg-zinc-950 border border-zinc-800 w-full rounded-lg flex items-center gap-2">
                         <User className="text-zinc-400 size-5" />
                         <input className="bg-transparent placeholder-zinc-400 outline-none flex-1" placeholder="Seu nome completo" type="text" name="name" />
@@ -38,11 +40,10 @@ export function ConfirmTripDialog(props: ConfirmTripDialogProps) {
                         <input className="bg-transparent placeholder-zinc-400 outline-none flex-1" placeholder="Seu e-mail pessoal" type="email" name="email" />
                     </div>
 
-                    <button className="bg-lime-300 text-lime-950 rounded-lg h-11 px-5 font-medium text-center hover:bg-lime-400"
-                        onClick={() => props.handleCreateTrip}
-                        type="submit">
+                    <Button variant='lime' type="submit">
                         Confirmar criação de viagem
-                    </button>
+                    </Button>
+
                 </form>
 
             </DialogContent>

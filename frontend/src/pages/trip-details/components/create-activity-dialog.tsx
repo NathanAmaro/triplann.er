@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { Calendar, Clock, Tag } from "lucide-react";
-import {dayjs} from '../../lib/dayjs'
+import {dayjs} from '../../../lib/dayjs'
 import { ptBR } from "date-fns/locale"
 import {
     Dialog,
@@ -8,13 +8,14 @@ import {
     DialogDescription,
     DialogHeader,
     DialogTitle
-} from "../ui/dialog";
-import { Calendar as DatePicker } from "../ui/calendar"
+} from "../../../components/ui/dialog";
+import { Calendar as DatePicker } from "../../../components/ui/calendar"
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
-} from "../ui/popover"
+} from "../../../components/ui/popover"
+import { Button } from "../../../components/ui/button";
 
 // AULA 2 - 1:02:02
 
@@ -89,10 +90,9 @@ export function CreateActivityDialog(props: CreateActivityDialogProps) {
                         </div>
                     </div>
 
-                    <button className="bg-lime-300 text-lime-950 rounded-lg h-11 px-5 font-medium text-center hover:bg-lime-400"
-                        type="submit">
+                    <Button variant='lime' type="submit">
                         Salvar atividade
-                    </button>
+                    </Button>
                 </form>
             </DialogContent>
         </Dialog>

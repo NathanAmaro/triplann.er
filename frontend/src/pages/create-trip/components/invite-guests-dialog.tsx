@@ -1,13 +1,14 @@
 import { FormEvent } from "react";
 import { AtSign, Plus, X } from "lucide-react";
-import { 
-    Dialog, 
-    DialogContent, 
-    DialogDescription, 
-    DialogFooter, 
-    DialogHeader, 
-    DialogTitle 
-} from "../ui/dialog";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle
+} from "../../../components/ui/dialog";
+import { Button } from "../../../components/ui/button";
 
 
 interface InviteGuestsDialogProps {
@@ -20,6 +21,7 @@ interface InviteGuestsDialogProps {
 }
 
 export function InviteGuestsDialog(props: InviteGuestsDialogProps) {
+    
     return (
         <Dialog open={props.open} onOpenChange={props.onOpenChange}>
             <DialogContent className="shadow-shape rounded-xl py-5 px-6 bg-zinc-900 border-none w-[640px] max-w-max space-y-2">
@@ -46,12 +48,10 @@ export function InviteGuestsDialog(props: InviteGuestsDialogProps) {
                     <form className="py-2 pl-4 pr-2 bg-zinc-950 border border-zinc-800 w-full rounded-lg flex items-center gap-2" onSubmit={props.handleSubmitFormInvite}>
                         <AtSign className="text-zinc-400 size-5" />
                         <input className="bg-transparent placeholder-zinc-400 outline-none flex-1" placeholder="Digite o e-mail do convidado" type="email" name="guestEmail" />
-                        <button className="bg-lime-300 text-lime-950 rounded-lg py-2 px-5 font-medium flex items-center gap-2 hover:bg-lime-400"
-                            onClick={props.handleActiveSecondInput}
-                            type="submit">
+                        <Button variant='lime' onClick={props.handleActiveSecondInput} type="submit">
                             Convidar
                             <Plus className="size-5 text-lime-950" />
-                        </button>
+                        </Button>
                     </form>
                 </DialogFooter>
             </DialogContent>

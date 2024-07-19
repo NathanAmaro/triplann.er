@@ -1,4 +1,5 @@
 import { ArrowRight, UserRoundPlus } from "lucide-react";
+import { Button } from "../../../components/ui/button";
 
 
 interface Step2Props {
@@ -23,13 +24,12 @@ export function Step2(props: Step2Props) {
                 </span>
             </button>
 
-            <div className="w-px h-6 bg-zinc-800" />
+            <hr className="w-px h-6 bg-zinc-800 border-none" />
 
-            <button className="bg-lime-300 text-lime-950 rounded-lg py-2 px-5 font-medium flex items-center gap-2 hover:bg-lime-400"
-                onClick={props.handleOpenConfirmTripModal}>
+            <Button variant='lime' onClick={props.handleOpenConfirmTripModal}>
                 Confirmar viagem
                 <ArrowRight className="size-5 text-lime-950" />
-            </button>
+            </Button>
         </div>
     )
 }
