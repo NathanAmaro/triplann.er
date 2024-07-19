@@ -68,7 +68,7 @@ export function CreateTripPage() {
     return (
         <>
             <div className="h-screen flex items-center justify-center">
-                <div className="max-w-3xl w-full px-6 text-center space-y-10">
+                <div className="w-3xl max-w-max w-full px-6 text-center space-y-10">
 
                     <div className="flex flex-col items-center gap-3">
                         <img className="w-64" src="/logo.svg" alt="triplann.er" />
