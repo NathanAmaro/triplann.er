@@ -66,6 +66,10 @@ const main = async () => {
     routePrefix: '/docs',
     configuration: {
       theme: 'solarized',
+      metaData: {
+        title: 'API Docs Triplann.er',
+        image: 'http://localhost:5173/icon.svg'
+      },
     },
   })
 
