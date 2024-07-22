@@ -9,7 +9,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "../../../components/ui/popover"
-import { useRef, useState } from "react";
+import { useRef } from "react";
 
 
 
@@ -17,10 +17,12 @@ interface Step1Props {
     isSecondInputActive: boolean
     handleInactiveSecondInput: () => void
     handleActiveSecondInput: () => void
+    dateState: DateRange | undefined
+    setDateState: (dateRange: DateRange | undefined) => void
+    setDestinationState: (destination: string) => void
 }
 
 export function Step1(props: Step1Props) {
-    const [date, setDate] = useState<DateRange>()
     const tripInput = useRef<HTMLInputElement>(null)
 
 
@@ -29,9 +31,11 @@ export function Step1(props: Step1Props) {
             return alert('Informe o destino da viagem')
         }
 
-        if (!date) {
+        if (!props.dateState) {
             return alert('Selecione uma data')
         }
+
+        props.setDestinationState(tripInput.current.value)
 
         return props.handleActiveSecondInput()
     }
@@ -49,15 +53,15 @@ export function Step1(props: Step1Props) {
                         <button className="text-zinc-400 text-lg bg-transparent border-none min-w-44 max-w-max rounded-lg flex items-center gap-2 disabled:cursor-not-allowed" disabled={props.isSecondInputActive}>
                             <Calendar className="text-zinc-400 size-5" />
                             {
-                                date?.from ? (
-                                    date.to ? (
+                                props.dateState?.from ? (
+                                    props.dateState.to ? (
                                         <span className="text-center text-zinc-200">
-                                            {`${dayjs(date.from).format('DD [de] MMMM')}  -  ${dayjs(date.to).format('DD [de] MMMM')}`}
+                                            {`${dayjs(props.dateState.from).format('DD [de] MMMM')}  -  ${dayjs(props.dateState.to).format('DD [de] MMMM')}`}
                                         </span>
 
                                     ) : (
                                         <span className="text-center text-zinc-200">
-                                            {dayjs(date.from).format('DD [de] MMMM')}
+                                            {dayjs(props.dateState.from).format('DD [de] MMMM')}
                                         </span>
                                     )
                                 ) : (
@@ -72,8 +76,8 @@ export function Step1(props: Step1Props) {
                     <PopoverContent className="w-auto p-0">
                         <DatePicker
                             mode="range"
-                            selected={date}
-                            onSelect={setDate}
+                            selected={props.dateState}
+                            onSelect={props.setDateState}
                             initialFocus
                             locale={ptBR}
                         />

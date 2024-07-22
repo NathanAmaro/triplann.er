@@ -4,14 +4,20 @@ import { InviteGuestsDialog } from "./components/invite-guests-dialog"
 import { ConfirmTripDialog } from "./components/confirm-trip-dialog"
 import { Step1 } from "./components/step-1"
 import { Step2 } from "./components/step-2"
+import { DateRange } from "react-day-picker"
+import { api } from "../../lib/axios"
 
 
+// AULA 3 - 36:25
 
 export function CreateTripPage() {
     const navigate = useNavigate()
     const [isSecondInputActive, setSecondInputActive] = useState(false)
     const [isOpenGuestsModal, setOpenGuestsModal] = useState(false)
     const [isOpenConfirmTripModal, setOpenConfirmTripModal] = useState(false)
+
+    const [dateTrip, setDateTrip] = useState<DateRange>()
+    const [tripDestination, setTripDestination] = useState<string>()
     const [emailsToInvite, setEmailsToInvite] = useState<string[]>([])
 
     function handleActiveSecondInput() {
@@ -56,14 +62,45 @@ export function CreateTripPage() {
         setOpenConfirmTripModal(true)
     }
 
-    function handleSubmitFormConfirmTrip(event: FormEvent<HTMLFormElement>) {
+    async function handleSubmitFormConfirmTrip(event: FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
-        navigate('/trips/123')
+        const data = new FormData(event.currentTarget)
+
+        const ownerName = data.get('name')?.toString()
+        const ownerEmail = data.get('email')?.toString()
+
+
+        console.log(tripDestination)
+        console.log(dateTrip)
+        console.log(emailsToInvite)
+        console.log(ownerName)
+        console.log(ownerEmail)
+
+        const optionsRequest = {
+            method: 'POST',
+            url: '/trips',
+            data: {
+                destination: tripDestination,
+                starts_at: dateTrip?.from,
+                ends_at: dateTrip?.to,
+                owner_name: ownerName,
+                owner_email: ownerEmail,
+                emails_to_invite: emailsToInvite
+            }
+        };
+
+        const response = await api.request(optionsRequest)
+
+        const { tripId } = response.data
+
+        event.currentTarget.reset()
+
+        navigate(`/trips/${tripId}`)
 
     }
 
-    
+
 
     return (
         <>
@@ -80,12 +117,15 @@ export function CreateTripPage() {
                     <div className="space-y-4">
                         <Step1 handleActiveSecondInput={handleActiveSecondInput}
                             handleInactiveSecondInput={handleInactiveSecondInput}
-                            isSecondInputActive={isSecondInputActive}/>
+                            isSecondInputActive={isSecondInputActive}
+                            dateState={dateTrip}
+                            setDateState={setDateTrip}
+                            setDestinationState={setTripDestination} />
 
                         {isSecondInputActive && (
                             <Step2 emailsToInvite={emailsToInvite}
                                 handleOpenConfirmTripModal={handleOpenConfirmTripModal}
-                                handleOpenGuestsModal={handleOpenGuestsModal}/>
+                                handleOpenGuestsModal={handleOpenGuestsModal} />
                         )}
 
                     </div>
@@ -98,16 +138,16 @@ export function CreateTripPage() {
                 </div>
             </div >
 
-            <InviteGuestsDialog open={isOpenGuestsModal} 
+            <InviteGuestsDialog open={isOpenGuestsModal}
                 onOpenChange={setOpenGuestsModal}
                 handleActiveSecondInput={handleActiveSecondInput}
                 handleRemoveEmailFormInvite={handleRemoveEmailFormInvite}
                 handleSubmitFormInvite={handleSubmitFormInvite}
-                emailsToInvite={emailsToInvite}/>
+                emailsToInvite={emailsToInvite} />
 
             <ConfirmTripDialog open={isOpenConfirmTripModal}
                 onOpenChange={setOpenConfirmTripModal}
-                handleSubmitFormConfirmTrip={handleSubmitFormConfirmTrip}/>
+                handleSubmitFormConfirmTrip={handleSubmitFormConfirmTrip} />
         </>
     )
 }
