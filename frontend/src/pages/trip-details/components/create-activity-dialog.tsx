@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import { Calendar, Clock, Tag } from "lucide-react";
 import { dayjs } from '../../../lib/dayjs'
 import { ptBR } from "date-fns/locale"
@@ -16,16 +16,19 @@ import {
     DialogHeader,
     DialogTitle
 } from "../../../components/ui/dialog";
+import { api } from "../../../lib/axios";
 
 
 
 interface CreateActivityDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
+    tripId?: string
 }
 
 export function CreateActivityDialog(props: CreateActivityDialogProps) {
     const [date, setDate] = useState<Date>()
+    const [isLoading, setRequestLoading] = useState<boolean>(false)
     const dateInput = useRef<HTMLInputElement | null>(null)
     const timeInput = useRef<HTMLInputElement | null>(null)
 
@@ -48,6 +51,56 @@ export function CreateActivityDialog(props: CreateActivityDialogProps) {
         timeInput.current?.showPicker()
     }
 
+    async function handleSubmitForm(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault()
+
+        setRequestLoading(true)
+
+        const data = new FormData(event.currentTarget)
+
+        const activity = data.get('activity')?.toString()
+        const time = data.get('time')?.toString()
+
+        if (!date) {
+            return alert('A data da atividade é obrigatória.')
+        }
+
+        if (!activity) {
+            return alert('A descrição da atividade é obrigatória.')
+        }
+
+        if (!time) {
+            return alert('A hora da atividade é obrigatória.')
+        }
+
+        const newDateWithHours = dayjs(date).add(parseInt(time.slice(0,2)), 'hours')
+        const newDateWithHoursAndMinutes = dayjs(newDateWithHours).add(parseInt(time.slice(3)), 'minutes')
+
+        // Configurando a requisição
+        const optionsRequest = {
+            method: 'POST',
+            url: `/trips/${props.tripId}/activities`,
+            data: {
+                title: activity,
+                occurs_at: newDateWithHoursAndMinutes
+            }
+        }
+
+        try {
+            // Enviando a requisição
+            await api.request(optionsRequest)
+
+            event.currentTarget.reset()
+
+        } catch (error) {
+            console.log(error)
+
+        } finally {
+            // Desativando o loading do botão
+            setRequestLoading(false)
+        }
+    }
+
     return (
         <Dialog open={props.open} onOpenChange={handleDialogChange} >
             <DialogContent className="shadow-shape rounded-xl py-5 px-6 bg-zinc-900 border-none w-[640px] space-y-2">
@@ -58,7 +111,7 @@ export function CreateActivityDialog(props: CreateActivityDialogProps) {
                     </DialogDescription>
                 </DialogHeader>
 
-                <form className="w-full flex flex-col gap-3">
+                <form className="w-full flex flex-col gap-3" onSubmit={handleSubmitForm}>
                     <div className="py-4 pl-4 pr-2 bg-zinc-950 border border-zinc-800 flex-1 rounded-lg flex items-center gap-2">
                         <Tag className="text-zinc-400 size-5" />
                         <input className="bg-transparent placeholder-zinc-400 outline-none w-full" placeholder="Qual a atividade?" type="text" name="activity" />
@@ -70,7 +123,6 @@ export function CreateActivityDialog(props: CreateActivityDialogProps) {
                                 <button className="py-4 pl-4 pr-2 bg-zinc-950 border border-zinc-800 w-full rounded-lg flex items-center gap-2">
                                     <Calendar className="text-zinc-400 size-5" />
                                     <span className="text-center">{date ? dayjs(date).format('DD [de] MMMM [de] YYYY') : 'Quando?'}</span>
-                                    <input className="[display:none]" type="date" name="date" />
                                 </button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0">
@@ -90,7 +142,7 @@ export function CreateActivityDialog(props: CreateActivityDialogProps) {
                         </div>
                     </div>
 
-                    <Button variant='lime' type="submit">
+                    <Button variant='lime' type="submit" isLoading={isLoading}>
                         Salvar atividade
                     </Button>
                 </form>

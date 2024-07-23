@@ -14,6 +14,7 @@ interface ConfirmTripDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
     handleSubmitFormConfirmTrip: (event: FormEvent<HTMLFormElement>) => void
+    requestLoading?: boolean
 }
 
 
@@ -21,7 +22,7 @@ export function ConfirmTripDialog(props: ConfirmTripDialogProps) {
     
     return (
         <Dialog open={props.open} onOpenChange={props.onOpenChange}>
-            <DialogContent className="shadow-shape rounded-xl py-5 px-6 bg-zinc-900 border-none w-[640px] max-w-max space-y-2">
+            <DialogContent className="shadow-shape rounded-xl py-5 px-6 bg-zinc-900 border-none w-[640px] max-w-max space-y-2" onInteractOutside={(e) => {e.preventDefault()}}>
                 <DialogHeader className="space-y-2">
                     <DialogTitle className="text-lg font-semibold">Confirmar criação de viagem</DialogTitle>
                     <DialogDescription className="text-sm text-zinc-400">
@@ -40,7 +41,7 @@ export function ConfirmTripDialog(props: ConfirmTripDialogProps) {
                         <input className="bg-transparent placeholder-zinc-400 outline-none flex-1" placeholder="Seu e-mail pessoal" type="email" name="email" />
                     </div>
 
-                    <Button variant='lime' type="submit">
+                    <Button variant='lime' type="submit" isLoading={props.requestLoading}>
                         Confirmar criação de viagem
                     </Button>
 

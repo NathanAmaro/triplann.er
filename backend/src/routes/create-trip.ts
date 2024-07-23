@@ -20,7 +20,7 @@ export async function createTrip(app: FastifyInstance) {
                 ends_at: z.coerce.date().describe('Dia de fim da viagem'),
                 owner_name: z.string().describe('Nome do proprietário(a) da viagem'),
                 owner_email: z.string().email().describe('E-mail do proprietário(a) da viagem'),
-                emails_to_invite: z.array(z.string().email()).describe('Lista dos e-mail dos convidados da viagem')
+                emails_to_invite: z.array(z.string().email()).optional().describe('Lista dos e-mail dos convidados da viagem')
             }),
             response: {
                 200: z.object({
@@ -58,13 +58,23 @@ export async function createTrip(app: FastifyInstance) {
                                     email: owner_email,
                                     is_owner: true,
                                     is_confirmed: true
-                                },
-                                ...emails_to_invite.map(email => {return { email }}) // Criando os participantes
+                                }
                             ]
                         }
                     }
                 }
             })
+
+            // Criando os participantes caso houver
+            if (emails_to_invite) {
+                if (emails_to_invite.length > 0) {
+                    const participants = await prisma.participant.createMany({
+                        data: [
+                            ...emails_to_invite.map((email) => {return {email: email, trip_id: trip.id}})
+                        ]
+                    })
+                }
+            }
 
             // Formatando as datas
             const formattedStartDate = dayjs(starts_at).locale("pt-br").format('DD [de] MMMM [de] YYYY')

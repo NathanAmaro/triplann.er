@@ -8,13 +8,12 @@ import { DateRange } from "react-day-picker"
 import { api } from "../../lib/axios"
 
 
-// AULA 3 - 36:25
-
 export function CreateTripPage() {
     const navigate = useNavigate()
     const [isSecondInputActive, setSecondInputActive] = useState(false)
     const [isOpenGuestsModal, setOpenGuestsModal] = useState(false)
     const [isOpenConfirmTripModal, setOpenConfirmTripModal] = useState(false)
+    const [requestLoading, setRequestLoading] = useState<boolean>(false)
 
     const [dateTrip, setDateTrip] = useState<DateRange>()
     const [tripDestination, setTripDestination] = useState<string>()
@@ -65,38 +64,62 @@ export function CreateTripPage() {
     async function handleSubmitFormConfirmTrip(event: FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
+        // Ativando o loading do botão do formulário
+        setRequestLoading(true)
+
         const data = new FormData(event.currentTarget)
 
         const ownerName = data.get('name')?.toString()
         const ownerEmail = data.get('email')?.toString()
 
+        if (!tripDestination) {
+            return alert('O destino da viagem é obrigatório.')
+        }
 
-        console.log(tripDestination)
-        console.log(dateTrip)
-        console.log(emailsToInvite)
-        console.log(ownerName)
-        console.log(ownerEmail)
+        if (!dateTrip) {
+            return alert('A data da viagem é obrigatória.')
+        }
 
+        if (!ownerName) {
+            return alert('O nome do proprietário da viagem é obrigatório.')
+        }
+
+        if (!ownerEmail) {
+            return alert('O email do proprietário da viagem é obrigatório.')
+        }
+
+        // Configurando a requisição
         const optionsRequest = {
             method: 'POST',
             url: '/trips',
             data: {
                 destination: tripDestination,
-                starts_at: dateTrip?.from,
-                ends_at: dateTrip?.to,
+                starts_at: dateTrip.from,
+                ends_at: dateTrip.to ? dateTrip.to : dateTrip.from,
                 owner_name: ownerName,
                 owner_email: ownerEmail,
                 emails_to_invite: emailsToInvite
             }
-        };
+        }
 
-        const response = await api.request(optionsRequest)
+        try {
+            // Enviando a requisição
+            const response = await api.request(optionsRequest)
 
-        const { tripId } = response.data
+            const { tripId } = response.data
 
-        event.currentTarget.reset()
+            // Redirecionando para a página da viagem
+            navigate(`/trips/${tripId}`)
 
-        navigate(`/trips/${tripId}`)
+            event.currentTarget.reset()
+
+        } catch (error) {
+            console.log(error)
+
+        } finally {
+            // Desativando o loading do botão
+            setRequestLoading(false)
+        }
 
     }
 
@@ -147,7 +170,8 @@ export function CreateTripPage() {
 
             <ConfirmTripDialog open={isOpenConfirmTripModal}
                 onOpenChange={setOpenConfirmTripModal}
-                handleSubmitFormConfirmTrip={handleSubmitFormConfirmTrip} />
+                handleSubmitFormConfirmTrip={handleSubmitFormConfirmTrip}
+                requestLoading={requestLoading} />
         </>
     )
 }
