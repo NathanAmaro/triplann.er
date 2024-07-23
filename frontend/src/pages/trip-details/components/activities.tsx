@@ -8,6 +8,7 @@ dayjs.extend(utc)
 
 interface ActivitiesProps {
     tripId?: string
+    hookRequest?: string
 }
 
 interface DayActivities {
@@ -45,7 +46,7 @@ export function Activities(props: ActivitiesProps) {
             }
         } request()
 
-    }, [props.tripId])
+    }, [props.tripId, props.hookRequest])
 
 
 

@@ -24,6 +24,7 @@ export function TripDetailsPage() {
     const { tripId } = useParams()
     const [isOpenActivityModal, setOpenActivityModal] = useState(false)
     const [tripDetails, setTripDetails] = useState<TripDetails | undefined>()
+    const [newActivityCreated, setNewActivityCreated] = useState<string>('')
 
 
     useEffect(() => {
@@ -68,7 +69,7 @@ export function TripDetailsPage() {
                                 Cadastrar atividade
                             </Button>
                         </div>
-                        <Activities tripId={tripId}/>
+                        <Activities tripId={tripId} hookRequest={newActivityCreated}/>
                     </section>
                     <section className="w-80 space-y-6">
                         <ImportantLinks />
@@ -80,7 +81,7 @@ export function TripDetailsPage() {
                 </main>
             </div>
 
-            <CreateActivityDialog open={isOpenActivityModal} onOpenChange={setOpenActivityModal} tripId={tripId} />
+            <CreateActivityDialog open={isOpenActivityModal} onOpenChange={setOpenActivityModal} tripId={tripId} onCreateActivityCallback={setNewActivityCreated}/>
         </>
     )
 }

@@ -4,26 +4,17 @@ import { dayjs } from '../../../lib/dayjs'
 import { ptBR } from "date-fns/locale"
 import { Calendar as DatePicker } from "../../../components/ui/calendar"
 import { Button } from "../../../components/ui/button";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "../../../components/ui/popover"
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle
-} from "../../../components/ui/dialog";
 import { api } from "../../../lib/axios";
-
+import { toast } from "sonner"
+import { Popover, PopoverContent, PopoverTrigger } from "../../../components/ui/popover"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../../../components/ui/dialog";
 
 
 interface CreateActivityDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
     tripId?: string
+    onCreateActivityCallback?: (activity: string) => void
 }
 
 export function CreateActivityDialog(props: CreateActivityDialogProps) {
@@ -37,7 +28,7 @@ export function CreateActivityDialog(props: CreateActivityDialogProps) {
         return props.onOpenChange(state)
     }
 
-    function handleChangeDateInputValue (value: Date | undefined) {
+    function handleChangeDateInputValue(value: Date | undefined) {
         if (dateInput.current) {
             if (date) {
                 dateInput.current.value = date.toString()
@@ -62,18 +53,18 @@ export function CreateActivityDialog(props: CreateActivityDialogProps) {
         const time = data.get('time')?.toString()
 
         if (!date) {
-            return alert('A data da atividade é obrigatória.')
+            return toast('A data da atividade é obrigatória.')
         }
 
         if (!activity) {
-            return alert('A descrição da atividade é obrigatória.')
+            return toast('A descrição da atividade é obrigatória.')
         }
 
         if (!time) {
-            return alert('A hora da atividade é obrigatória.')
+            return toast('A hora da atividade é obrigatória.')
         }
 
-        const newDateWithHours = dayjs(date).add(parseInt(time.slice(0,2)), 'hours')
+        const newDateWithHours = dayjs(date).add(parseInt(time.slice(0, 2)), 'hours')
         const newDateWithHoursAndMinutes = dayjs(newDateWithHours).add(parseInt(time.slice(3)), 'minutes')
 
         // Configurando a requisição
@@ -88,7 +79,17 @@ export function CreateActivityDialog(props: CreateActivityDialogProps) {
 
         try {
             // Enviando a requisição
-            await api.request(optionsRequest)
+            const response = await api.request(optionsRequest)
+
+            toast("Atividade cadastrada com sucesso.")
+
+            props.onOpenChange(false)
+
+            setDate(undefined)
+
+            if (props.onCreateActivityCallback) {
+                props.onCreateActivityCallback(response.data.activityId)
+            }
 
             event.currentTarget.reset()
 
