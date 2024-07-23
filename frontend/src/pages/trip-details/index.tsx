@@ -72,7 +72,7 @@ export function TripDetailsPage() {
                         <Activities tripId={tripId} hookRequest={newActivityCreated}/>
                     </section>
                     <section className="w-80 space-y-6">
-                        <ImportantLinks />
+                        <ImportantLinks tripId={tripId}/>
 
                         <hr className="w-full h-px bg-zinc-800 border-none" />
 

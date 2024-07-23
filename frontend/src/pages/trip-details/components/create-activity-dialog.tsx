@@ -64,8 +64,6 @@ export function CreateActivityDialog(props: CreateActivityDialogProps) {
             return toast('A hora da atividade é obrigatória.')
         }
 
-        const newDateWithHours = dayjs(date).add(parseInt(time.slice(0, 2)), 'hours')
-        const newDateWithHoursAndMinutes = dayjs(newDateWithHours).add(parseInt(time.slice(3)), 'minutes')
 
         // Configurando a requisição
         const optionsRequest = {
@@ -73,7 +71,7 @@ export function CreateActivityDialog(props: CreateActivityDialogProps) {
             url: `/trips/${props.tripId}/activities`,
             data: {
                 title: activity,
-                occurs_at: newDateWithHoursAndMinutes
+                occurs_at: `${dayjs(date).format(`YYYY-MM-DD`)} ${time}`
             }
         }
 
